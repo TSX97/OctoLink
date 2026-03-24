@@ -5,6 +5,7 @@
 #include <thread>
 #include <mutex>
 #include "client.hpp"
+#include "tools.h"
 
 using namespace std;
 using boost::asio::ip::tcp;
@@ -16,7 +17,8 @@ int next_id = 1;
 void handle_client(shared_ptr<Client> client) {
 	while (true) {
 		char data[1024] = {0};
-		boost::system::error_code err;
+		boost::system::error_code err; //ловит ошибку
+		//длина сообщения. читает прямо в data.
 		size_t len = client->sock.read_some(boost::asio::buffer(data), err);
 		if (err == boost::asio::error::eof) {
 			cout << client->name << " closed" << endl;
@@ -30,8 +32,15 @@ void handle_client(shared_ptr<Client> client) {
 		while (!msg.empty() && (msg.back() == '\n' || msg.back() == '\r')) {
 			msg.pop_back();
 		}
-		cout << client->name << ": " << msg << endl;
-		client->send(msg);
+		if (msg.empty()) {
+			cout << client->name << " closed" << endl;
+		}
+		vector<string> line = tools::split(msg, ' ');
+		string cmd = line[0];
+		if (cmd == "MSG") {
+
+		} //TODO РЕАЛИЗОВАТЬ ОБРАБОТКУ MSG
+
 	}
 	{
 		lock_guard<mutex> lock(clients_mutex);

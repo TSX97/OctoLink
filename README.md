@@ -1,5 +1,5 @@
-## OctoLink
-**secure messenger for friends and family**
+## INK
+**secure messenger for friends and family / I Never Knew**
 
 ## About
 
