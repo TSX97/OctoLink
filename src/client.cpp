@@ -7,8 +7,8 @@ using boost::asio::ip::tcp;
 
 
 
-Client::Client(tcp::socket s, int i): name("User" + to_string(i)), id(i), sock(move(s)){}
+Client::Client(tcp::socket s, int i): name("User" + to_string(i)), id(i), socket(move(s)){}
 
 void Client::send(const string& message) {
-        boost::asio::write(sock, boost::asio::buffer(message + "\n"));
+        boost::asio::write(socket, boost::asio::buffer(message + "\n"));
     }

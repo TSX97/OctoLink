@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <algorithm>
 
 using namespace std;
 ClientManager::ClientManager() = default;
@@ -9,6 +10,7 @@ ClientManager::~ClientManager() = default;
 
 void ClientManager::add(std::shared_ptr<Client> client) {
     lock_guard<mutex> lock(mtx);
+    client->id = ++next_id;
     clients.push_back(move(client));
 
 }

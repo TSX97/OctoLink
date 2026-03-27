@@ -1,15 +1,38 @@
-cmake_minimum_required(VERSION 3.5)
-project(octolink)
+cmake_minimum_required(VERSION 3.20)
+project(ink)
 
-set(CMAKE_CXX_STANDART 20)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Boost REQUIRED COMPONENTS system)
+find_package(nlohmann_json REQUIRED)
 
 include_directories(include)
 
-add_executable(octolink_server src/server.cpp src/client.cpp)
-add_executable(octolink_client src/client_app.cpp)
+# Server
+add_executable(ink_server
+        src/main.cpp
+        src/server.cpp
+        src/client.cpp
+        src/manager.cpp
+        src/fishman.cpp
+        src/tools.cpp
+)
 
-target_link_libraries(octolink_server Boost::system pthread)
-target_link_libraries(octolink_client Boost::system pthread)
+# Client
+add_executable(ink_client
+        src/client_app.cpp
+        src/tools.cpp
+)
+
+target_link_libraries(ink_server
+        Boost::system
+        nlohmann_json::nlohmann_json
+        pthread
+)
+
+target_link_libraries(ink_client
+        Boost::system
+        nlohmann_json::nlohmann_json
+        pthread
+)

@@ -12,6 +12,7 @@ class ClientManager {
 private:
     std::vector<std::shared_ptr<Client>> clients;
     std::mutex mtx;
+    int next_id = 0;
 
 public:
     ClientManager();
@@ -19,9 +20,9 @@ public:
 
     void add(std::shared_ptr<Client> c);
     void remove_by_name(const std::string& name);
-    void remove_by_id(const int& id);
-    std::shared_ptr<Client> find_name(const std::string& name);
-    std::shared_ptr<Client> find_id(int id);
+    void remove_by_id(int id);
+    std::shared_ptr<Client> find_by_name(const std::string& name);
+    std::shared_ptr<Client> find_by_id(int id);
     std::vector<std::shared_ptr<Client>> get_all();
 
 
