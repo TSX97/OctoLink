@@ -22,7 +22,10 @@ add_executable(ink_server
 # Client
 add_executable(ink_client
         src/client_app.cpp
+        src/client.cpp
+        src/manager.cpp
         src/tools.cpp
+        src/protocol.cpp
 )
 
 target_link_libraries(ink_server

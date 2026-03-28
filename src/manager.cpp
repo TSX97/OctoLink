@@ -12,7 +12,6 @@ void ClientManager::add(std::shared_ptr<Client> client) {
     lock_guard<mutex> lock(mtx);
     client->id = ++next_id;
     clients.push_back(move(client));
-
 }
 
 void ClientManager::remove_by_name(const std::string &name) {

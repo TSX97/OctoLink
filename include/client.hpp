@@ -7,6 +7,7 @@
 struct Client {
     std::string name;
     int id;
+    std::string target;
     boost::asio::ip::tcp::socket socket;
 
     Client(boost::asio::ip::tcp::socket socket, int id);
