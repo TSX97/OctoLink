@@ -1,77 +1,43 @@
-#include <iostream>
-#include <boost/asio.hpp>
-#include <vector>
-#include <algorithm>
+#include "server.hpp"
+#include "fishman.hpp"
 #include <thread>
-#include <mutex>
-#include "client.hpp"
-#include "tools.h"
+#include <boost/asio.hpp>
 
 using namespace std;
-using boost::asio::ip::tcp;
 
-mutex clients_mutex;
-vector<shared_ptr<Client>> clients;
-int next_id = 1;
-
-void handle_client(shared_ptr<Client> client) {
-	while (true) {
-		char data[1024] = {0};
-		boost::system::error_code err; //ловит ошибку
-		//длина сообщения. читает прямо в data.
-		size_t len = client->sock.read_some(boost::asio::buffer(data), err);
-		if (err == boost::asio::error::eof) {
-			cout << client->name << " closed" << endl;
-			break;
- 		}
-		if (err) {
-			cout << "error reading from " << client->name << ": " << err.message() << endl;
-			break;
-		}
-		string msg(data, len);
-		while (!msg.empty() && (msg.back() == '\n' || msg.back() == '\r')) {
-			msg.pop_back();
-		}
-		if (msg.empty()) {
-			cout << client->name << " closed" << endl;
-		}
-		vector<string> line = tools::split(msg, ' ');
-		string cmd = line[0];
-		if (cmd == "MSG") {
-
-		} //TODO РЕАЛИЗОВАТЬ ОБРАБОТКУ MSG
-
-	}
-	{
-		lock_guard<mutex> lock(clients_mutex);
-		clients.erase(remove_if(clients.begin(), clients.end(),
-			[&client](const shared_ptr<Client>& c) { return c->id == client->id; }),
-			clients.end());
-	}
+Server::Server(short port)
+    : acceptor_(io_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {
+    cout << "acceptor created" << endl;
+    Fishman::init();
 }
 
-int main(){
-	try {
-		boost::asio::io_context io;
-		tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 8080));
-		cout << "acceptor created" << endl;
+Server::~Server() = default;
 
-		while(true) {
-			tcp::socket socket(io);
-			acceptor.accept(socket);
-			cout << "acceptor accepted" << endl;
-			int id = next_id++;
-			auto client = make_shared<Client>(move(socket), id);
-			{
-				lock_guard<mutex> lock(clients_mutex);
-				clients.push_back(client);
+void Server::run() {
+    accept();
+    io_.run();
+}
 
-			}
-			thread(handle_client, client).detach();
+void Server::accept() {
+    auto socket = std::make_shared<boost::asio::ip::tcp::socket>(io_);
+    acceptor_.async_accept(*socket,
+        [this, socket](boost::system::error_code ec) {
+            if (!ec) {
+                auto client = std::make_shared<Client>(std::move(*socket), 0);
+                client_manager_.add(client);
+                std::thread(&Server::handle_client, this, client).detach();
+            }
+            accept();
+        });
+}
 
-			}
-		} catch (exception& e) {
-		cout << "Error: " << e.what() << endl;
-	}
-	return 0;
+void Server::handle_client(shared_ptr<Client> client) {
+    char buf[1024];
+    boost::system::error_code ec;
+    while (true) {
+        size_t len = client->socket.read_some(boost::asio::buffer(buf), ec);
+        if (ec) break;
+        std::string raw(buf, len);
+        Fishman::handle(raw, client, client_manager_);
+    }
 }

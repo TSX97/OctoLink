@@ -1,9 +1,9 @@
-## INK
-**secure messenger for friends and family / I Never Knew**
+## Ink
+**secure messenger for friends and family**
 
 ## About
 
-OctoLink is an end-to-end encrypted messenger designed for private communication.  
+Ink is an end-to-end encrypted messenger designed for private communication.  
 Built with modern C++ and Boost.Asio, it combines security, performance, and cross-platform support.
 
 ---
@@ -34,6 +34,7 @@ Built with modern C++ and Boost.Asio, it combines security, performance, and cro
 ### Backend
 - **PostgreSQL** — persistent storage
 - **Redis** — caching, sessions
+- **MongoDB** — media, files, 
 - **gRPC** — microservices
 
 ### Frontend

@@ -7,9 +7,10 @@
 struct Client {
     std::string name;
     int id;
-    boost::asio::ip::tcp::socket sock;
+    std::string target;
+    boost::asio::ip::tcp::socket socket;
 
-    Client(boost::asio::ip::tcp::socket sock, int id);
+    Client(boost::asio::ip::tcp::socket socket, int id);
     void send(const std::string& message);
 
 };
