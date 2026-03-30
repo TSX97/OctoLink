@@ -7,12 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(nlohmann_json REQUIRED)
 
-include_directories(include)
 
-# Server
-add_executable(server
-        src/main.cpp
-        src/server.cpp
+#=========
+# C o r e
+#=========
+
+add_library(core STATIC
         src/client.cpp
         src/manager.cpp
         src/fishman.cpp
@@ -20,23 +20,76 @@ add_executable(server
         src/protocol.cpp
 )
 
-# Client
+target_include_directories(core PUBLIC include)
+target_link_libraries(core PUBLIC
+        Boost::system
+        nlohmann_json::nlohmann_json
+)
+
+#=============
+# S e r v e r
+#=============
+
+add_executable(server
+    src/main.cpp
+    src/server.cpp
+)
+
+target_link_libraries(server PRIVATE core pthread)
+
+
+#=============
+# C l i e n t
+#=============
+
 add_executable(client
         src/client_app.cpp
-        src/client.cpp
-        src/manager.cpp
-        src/tools.cpp
-
 )
 
-target_link_libraries(server
-        Boost::system
-        nlohmann_json::nlohmann_json
+target_link_libraries(client PRIVATE core pthread)
+
+
+#===========
+# T e s t s
+#===========
+
+if(INK_BUILD_TESTS)
+    enable_testing()
+
+    include(FetchContent)
+    FetchContent_Declare(
+            googletest
+            URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+    )
+    FetchContent_MakeAvailable(googletest)
+
+    add_library(core_test STATIC
+            src/client.cpp
+            src/manager.cpp
+            src/fishman.cpp
+            src/tools.cpp
+            src/protocol.cpp
+    )
+    target_compile_definitions(core_test PRIVATE INK_TEST_MODE)
+    target_include_directories(core_test PUBLIC include)
+    target_link_libraries(core_test PUBLIC
+            Boost::system
+            nlohmann_json::nlohmann_json
+    )
+    add_executable(tests
+        tests/test_protocol.cpp
+        tests/test_manager.cpp
+    )
+
+    target_compile_definitions(tests PRIVATE INK_TEST_MODE)
+
+    target_link_libraries(tests
+        core_test
+        gtest
+        gtest_main
         pthread
-)
+    )
 
-target_link_libraries(client
-        Boost::system
-        nlohmann_json::nlohmann_json
-        pthread
-)
+    include(GoogleTest)
+    gtest_discover_tests(tests)
+endif()

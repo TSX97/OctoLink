@@ -20,6 +20,7 @@ namespace TENTA {
 
         client->name = name;
         client->send(tools::ok("Registered as " + name).dump());
+        cm.add(client);
         cout << "User " << client->name << " registered" << std::endl;
     }
 
