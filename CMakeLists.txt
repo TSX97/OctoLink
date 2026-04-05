@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(nlohmann_json REQUIRED)
-
+find_package(PostgreSQL REQUIRED)
+target_link_libraries(ink_server PRIVATE ${PostgreSQL_LIBRARIES})
+target_include_directories(ink_server PRIVATE ${PostgreSQL_INCLUDE_DIRS})
 
 #=========
 # C o r e
@@ -44,6 +46,7 @@ target_link_libraries(server PRIVATE core pthread)
 
 add_executable(client
         src/client_app.cpp
+        src/database.cpp
 )
 
 target_link_libraries(client PRIVATE core pthread)
