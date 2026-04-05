@@ -7,8 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(nlohmann_json REQUIRED)
 find_package(PostgreSQL REQUIRED)
-target_link_libraries(ink_server PRIVATE ${PostgreSQL_LIBRARIES})
-target_include_directories(ink_server PRIVATE ${PostgreSQL_INCLUDE_DIRS})
+
 
 #=========
 # C o r e
@@ -20,12 +19,14 @@ add_library(core STATIC
         src/fishman.cpp
         src/tools.cpp
         src/protocol.cpp
+        src/crypto/password.cpp
 )
 
 target_include_directories(core PUBLIC include)
 target_link_libraries(core PUBLIC
         Boost::system
         nlohmann_json::nlohmann_json
+        crypt
 )
 
 #=============
@@ -33,13 +34,21 @@ target_link_libraries(core PUBLIC
 #=============
 
 add_executable(server
-    src/main.cpp
-    src/server.cpp
+        src/main.cpp
+        src/server.cpp
+        src/database.cpp
 )
 
-target_link_libraries(server PRIVATE core pthread)
+target_include_directories(server PRIVATE
+        include                      # ← добавить
+        ${PostgreSQL_INCLUDE_DIRS}
+)
 
-
+target_link_libraries(server PRIVATE
+        core
+        pthread
+        ${PostgreSQL_LIBRARIES}
+)
 #=============
 # C l i e n t
 #=============
@@ -47,10 +56,19 @@ target_link_libraries(server PRIVATE core pthread)
 add_executable(client
         src/client_app.cpp
         src/database.cpp
+        src/crypto/password.cpp
 )
 
-target_link_libraries(client PRIVATE core pthread)
+target_include_directories(client PRIVATE
+        include
+        ${PostgreSQL_INCLUDE_DIRS}
+)
 
+target_link_libraries(client PRIVATE
+        core
+        pthread
+        ${PostgreSQL_LIBRARIES}
+)
 
 #===========
 # T e s t s

@@ -2,6 +2,7 @@
 #define DATABASE_HPP
 
 #include <string>
+#include <libpq-fe.h>
 
 class Database {
 	public: 
@@ -11,7 +12,8 @@ class Database {
 		int find_user(const std::string& name);
 		int authenticate(const std::string& name, const std::string& password);
 		void save_message(int from, int to, const std::string& text);
-
+private:
+	PGconn* conn;
 
 };
 #endif
