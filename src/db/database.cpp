@@ -1,4 +1,4 @@
-#include "database.hpp"
+#include "db/database.hpp"
 #include <string>
 #include <iostream>
 #include <libpq-fe.h>

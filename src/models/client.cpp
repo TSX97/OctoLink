@@ -1,6 +1,6 @@
 #include <string>
 #include <boost/asio.hpp>
-#include "client.hpp"
+#include "models/client.hpp"
 
 using namespace std;
 using boost::asio::ip::tcp;

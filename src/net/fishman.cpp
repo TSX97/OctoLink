@@ -1,5 +1,5 @@
-#include "fishman.hpp"
-#include "protocol.hpp"
+#include "net/fishman.hpp"
+#include "net/protocol.hpp"
 #include "tools.hpp"
 #include <map>
 #include <functional>

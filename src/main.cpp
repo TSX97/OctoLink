@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "net/server.hpp"
 using namespace std;
 
 int main() {

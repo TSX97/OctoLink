@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
-#include "client.hpp"
+#include "models/client.hpp"
 
 class ClientManager {
 

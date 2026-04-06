@@ -1,5 +1,5 @@
 #include "server.hpp"
-#include "fishman.hpp"
+#include "net/fishman.hpp"
 #include <thread>
 #include <boost/asio.hpp>
 

@@ -4,8 +4,8 @@
 #include <string>
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "client.hpp"
-#include "manager.hpp"
+#include "models/client.hpp"
+#include "models/client_manager.hpp"
 
 namespace Fishman {
     void init();

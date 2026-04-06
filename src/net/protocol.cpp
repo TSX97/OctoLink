@@ -1,4 +1,4 @@
-#include "protocol.hpp"
+#include "net/protocol.hpp"
 #include "tools.hpp"
 #include <iostream>
 #include <string>

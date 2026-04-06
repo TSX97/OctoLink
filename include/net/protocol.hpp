@@ -3,8 +3,8 @@
 
 #include <string>
 #include <memory>
-#include "manager.hpp"
-#include "client.hpp"
+#include "net/client_manager.hpp"
+#include "models/client.hpp"
 
 namespace TENTA {
     const std::string REG = "REG";

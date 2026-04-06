@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 #include <boost/asio.hpp>
-#include "manager.hpp"
+#include "models/client_manager.hpp"
 #include <memory>
 
 class Server {
