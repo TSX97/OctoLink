@@ -62,7 +62,12 @@ namespace TENTA {
         cout << "Client " << client->name << " now targets " << target_name << std::endl;
     }
 
-    void msg(const std::string& text, std::shared_ptr<Client>& client, ClientManager& cm) {
+    void msg(const std::string& text, std::shared_ptr<Client>& client, ClientManager& cm, Database& db) {
+
+        if (client->user_id == -1) {
+            client->send(tools::error("Not authenticated").dump());
+            return;
+        }
 
         if (text.empty()) {
             client->send(tools::error("text cannot be empty").dump());
@@ -74,10 +79,17 @@ namespace TENTA {
             return;
         }
 
+        int chat_id = db.get_or_create_private_chat(client->user_id, target_client->user_id);
+        if (chat_id == -1) {
+            client->send(tools::error("db error: cannot create chat").dump());
+            return;
+        }
+        db.save_message(chat_id, client->user_id, text);
+
         target_client->send("[PM from " + client->name + "]: " + text);
 
         client->send(tools::ok("Sent to " + client->target).dump());
-        cout << client->name << " -> " << client->target << ": " << text << std::endl;
+        cout << client->name << " -> " << client->target << ": " << text << endl;
     }
 
     void lst(shared_ptr<Client>& client, ClientManager& cm, Database& db) {

@@ -11,7 +11,7 @@ private:
     boost::asio::io_context io_;
     boost::asio::ip::tcp::acceptor acceptor_;
     ClientManager client_manager_;
-    Database db_;
+    Database& db_;
 
     void handle_client(std::shared_ptr<Client> client);
     void accept();

@@ -18,7 +18,7 @@ namespace TENTA {
     void reg(const std::string& login, const std::string& password, std::shared_ptr<Client>& client, ClientManager& cm, Database& db);
     void aut(const std::string& login, const std::string& password, std::shared_ptr<Client>& client, Database& db);
     void bnd(const std::string& target_name, std::shared_ptr<Client>& client, ClientManager& cm);
-    void msg(const std::string& text, std::shared_ptr<Client>& client, ClientManager& cm);
+    void msg(const std::string& text, std::shared_ptr<Client>& client, ClientManager& cm, Database& db);
     void lst(std::shared_ptr<Client>& client, ClientManager& cm, Database& db);
     void ext(std::shared_ptr<Client>& client);
 }

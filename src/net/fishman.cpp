@@ -36,7 +36,7 @@ namespace Fishman {
 
         handlers["MSG"] = [](const json& j, std::shared_ptr<Client> client, ClientManager& cm, Database& db) {
             string text = tools::get_arg(j, "text");
-            TENTA::msg(text, client, cm);
+            TENTA::msg(text, client, cm, db);
         };
 
         handlers["LST"] = [](const json& j, std::shared_ptr<Client> client, ClientManager& cm, Database& db) {

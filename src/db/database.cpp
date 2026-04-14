@@ -84,28 +84,47 @@ int Database::get_or_create_private_chat(int user1_id, int user2_id) {
     string sql = "SELECT cm1.chat_id "
                  "FROM chat_members cm1 "
                  "JOIN chat_members cm2 ON cm1.chat_id = cm2.chat_id "
-                 "WHERE cm1.user_id == " + to_string(user1_id) +
-                 " AND cm2.user_id == " + to_string(user2_id);
+                 "WHERE cm1.user_id = " + to_string(user1_id) +
+                 " AND cm2.user_id = " + to_string(user2_id);
     PGresult* res = PQexec(conn, sql.c_str());
-    if (PQresultStatus(res) != PGRES_TUPLES_OK && PQntuples(res) > 0) {
+    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0) {
         int chat_id = atoi(PQgetvalue(res, 0, 0));
         PQclear(res);
         return chat_id;
     }
     PQclear(res);
     sql = "INSERT INTO chats (type) VALUES ('private') RETURNING id";
-    res = PQexec(conn, sql.c_str());
-    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-        PQclear(res);
+    PGresult* res2 = PQexec(conn, sql.c_str());
+    if (PQresultStatus(res2) != PGRES_TUPLES_OK) {
+        PQclear(res2);
         return -1;
     }
-    int new_chat_id = atoi(PQgetvalue(res, 0, 0));
-    PQclear(res);
+    int new_chat_id = atoi(PQgetvalue(res2, 0, 0));
+    PQclear(res2);
     sql = "INSERT INTO chat_members (chat_id, user_id) VALUES"
           "(" + to_string(new_chat_id) + ", " + to_string(user1_id) + ")," +
           "(" + to_string(new_chat_id) + ", " + to_string(user2_id) + ")";
     PQexec(conn, sql.c_str());
-    PQclear(res);
-    return new_chat_id;
+    PQclear(res2);
 
+    return new_chat_id;
 }
+
+void Database::save_message(int chat_id, int from_user_id, const string &text) {
+    if (!conn) return;
+
+    string escaped_text = text;
+    size_t pos = 0;
+    while ((pos = escaped_text.find("'", pos)) != string::npos) {
+        escaped_text.replace(pos, 1, "''");
+        pos += 2;
+    }
+
+    string sql = "INSERT INTO messages (chat_id, from_user_id, text) VALUES"
+                 "(" + to_string(chat_id) + ", " + to_string(from_user_id) + ", '" + escaped_text + "')";
+    PGresult* res = PQexec(conn, sql.c_str());
+    PQclear(res);
+    return;
+}
+
+
